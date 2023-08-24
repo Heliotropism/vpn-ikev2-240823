@@ -602,8 +602,6 @@ update_iptables() {
     ipt_flag=1
   fi
   ipi='iptables -I INPUT'
-  iii='iptables -A'
-  iil='iptables -L'
   ipf='iptables -I FORWARD'
   ipp='iptables -t nat -I POSTROUTING'
   res='RELATED,ESTABLISHED'
@@ -616,9 +614,7 @@ update_iptables() {
     $ipi 4 -p udp -m multiport --dports 4500,2319 -j ACCEPT
     $ipi 5 -p udp --dport 1701 -m policy --dir in --pol ipsec -j ACCEPT
     $ipi 6 -p udp --dport 1701 -j DROP
-	$iii 7 INPUT --proto icmp -j DROP
-	$iil 8 -n -v [List Iptables Rules]
-    $ipf 1 -m conntrack --ctstate INVALID -j DROP
+	$ipf 1 -m conntrack --ctstate INVALID -j DROP
     $ipf 2 -i "$NET_IFACE" -o ppp+ -m conntrack --ctstate "$res" -j ACCEPT
     $ipf 3 -i ppp+ -o "$NET_IFACE" -j ACCEPT
     $ipf 4 -i ppp+ -o ppp+ -j ACCEPT
@@ -626,6 +622,8 @@ update_iptables() {
     $ipf 6 -s "$XAUTH_NET" -o "$NET_IFACE" -j ACCEPT
     $ipf 7 -s "$XAUTH_NET" -o ppp+ -j ACCEPT
     iptables -A FORWARD -j DROP
+	iptables -A INPUT --proto icmp -j DROP
+	iptables -L -n -v [List Iptables Rules]
     $ipp -s "$XAUTH_NET" -o "$NET_IFACE" -m policy --dir out --pol none -j MASQUERADE
     $ipp -s "$L2TP_NET" -o "$NET_IFACE" -j MASQUERADE
     echo "# Modified by hwdsl2 VPN script" > "$IPT_FILE"
