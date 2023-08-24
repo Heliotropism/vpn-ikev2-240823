@@ -243,10 +243,10 @@ install_pkgs() {
     ) || exiterr "'apk add' failed."
   fi
 }
-vpnsetup.sh
+
 get_setup_url() {
-  base_url1="/root/vpn/vpn-ikev2-240823"
-  base_url2="/root/vpn/vpn-ikev2-240823"
+  base_url1="https://raw.githubusercontent.com/Heliotropism/vpn-ikev2-240823/master"
+  base_url2="https://gitlab.com/Heliotropism/vpn-ikev2-240823/-/raw/master"
   sh_file="vpnsetup_ubuntu.sh"
   if [ "$os_type" = "centos" ] || [ "$os_type" = "rhel" ] || [ "$os_type" = "rocky" ] \
     || [ "$os_type" = "alma" ] || [ "$os_type" = "ol" ]; then
@@ -261,7 +261,11 @@ get_setup_url() {
 }
 
 run_setup() {
-  
+  status=0
+  if tmpdir=$(mktemp --tmpdir -d vpn.XXXXX 2>/dev/null); then
+    if ( set -x; wget -t 3 -T 30 -q -O "$tmpdir/vpn.sh" "$setup_url1" \
+      || wget -t 3 -T 30 -q -O "$tmpdir/vpn.sh" "$setup_url2" \
+      || curl -m 30 -fsL "$setup_url1" -o "$tmpdir/vpn.sh" 2>/dev/null ); then
       VPN_IPSEC_PSK="$VPN_IPSEC_PSK" VPN_USER="$VPN_USER" \
       VPN_PASSWORD="$VPN_PASSWORD" \
       VPN_PUBLIC_IP="$VPN_PUBLIC_IP" VPN_L2TP_NET="$VPN_L2TP_NET" \
@@ -272,7 +276,16 @@ run_setup() {
       VPN_PROTECT_CONFIG="$VPN_PROTECT_CONFIG" \
       VPN_CLIENT_VALIDITY="$VPN_CLIENT_VALIDITY" \
       VPN_SKIP_IKEV2="$VPN_SKIP_IKEV2" \
-      "/root/vpn/vpn-ikev2-240823/vpn.sh" \
+      /bin/bash "$tmpdir/vpn.sh" || status=1
+    else
+      status=1
+      echo "Error: Could not download VPN setup script." >&2
+    fi
+    /bin/rm -f "$tmpdir/vpn.sh"
+    /bin/rmdir "$tmpdir"
+  else
+    exiterr "Could not create temporary directory."
+  fi
 }
 
 vpnsetup() {
