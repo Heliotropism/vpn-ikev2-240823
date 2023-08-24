@@ -616,8 +616,8 @@ update_iptables() {
     $ipi 4 -p udp -m multiport --dports 4500,2319 -j ACCEPT
     $ipi 5 -p udp --dport 1701 -m policy --dir in --pol ipsec -j ACCEPT
     $ipi 6 -p udp --dport 1701 -j DROP
-	$iii INPUT --proto icmp -j DROP
-	$iil -n -v [List Iptables Rules]
+	$iii 7 INPUT --proto icmp -j DROP
+	$iil 8 -n -v [List Iptables Rules]
     $ipf 1 -m conntrack --ctstate INVALID -j DROP
     $ipf 2 -i "$NET_IFACE" -o ppp+ -m conntrack --ctstate "$res" -j ACCEPT
     $ipf 3 -i ppp+ -o "$NET_IFACE" -j ACCEPT
