@@ -602,6 +602,8 @@ update_iptables() {
     ipt_flag=1
   fi
   ipi='iptables -I INPUT'
+  iii='iptables -A'
+  iil='iptables -L'
   ipf='iptables -I FORWARD'
   ipp='iptables -t nat -I POSTROUTING'
   res='RELATED,ESTABLISHED'
@@ -614,8 +616,8 @@ update_iptables() {
     $ipi 4 -p udp -m multiport --dports 4500,2319 -j ACCEPT
     $ipi 5 -p udp --dport 1701 -m policy --dir in --pol ipsec -j ACCEPT
     $ipi 6 -p udp --dport 1701 -j DROP
-	iptables 7 -A INPUT --proto icmp -j DROP
-	iptables 8 -L -n -v [List Iptables Rules]
+	$iii INPUT --proto icmp -j DROP
+	$iil -n -v [List Iptables Rules]
     $ipf 1 -m conntrack --ctstate INVALID -j DROP
     $ipf 2 -i "$NET_IFACE" -o ppp+ -m conntrack --ctstate "$res" -j ACCEPT
     $ipf 3 -i ppp+ -o "$NET_IFACE" -j ACCEPT
