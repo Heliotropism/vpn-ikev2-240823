@@ -262,9 +262,7 @@ get_setup_url() {
 
 run_setup() {
   status=0
-  if tmpdir=$(mktemp --tmpdir -d vpn.XXXXX 2>/dev/null); then
-    
-      VPN_IPSEC_PSK="$VPN_IPSEC_PSK" VPN_USER="$VPN_USER" \
+        VPN_IPSEC_PSK="$VPN_IPSEC_PSK" VPN_USER="$VPN_USER" \
       VPN_PASSWORD="$VPN_PASSWORD" \
       VPN_PUBLIC_IP="$VPN_PUBLIC_IP" VPN_L2TP_NET="$VPN_L2TP_NET" \
       VPN_L2TP_LOCAL="$VPN_L2TP_LOCAL" VPN_L2TP_POOL="$VPN_L2TP_POOL" \
@@ -275,9 +273,6 @@ run_setup() {
       VPN_CLIENT_VALIDITY="$VPN_CLIENT_VALIDITY" \
       VPN_SKIP_IKEV2="$VPN_SKIP_IKEV2" \
       /bin/bash "$tmpdir/vpn.sh" || status=1
-    else
-      status=1
-      echo "Error: Could not download VPN setup script." >&2
     fi
     /bin/rm -f "$tmpdir/vpn.sh"
     /bin/rmdir "$tmpdir"
