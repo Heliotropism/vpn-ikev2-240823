@@ -611,7 +611,7 @@ update_iptables() {
     $ipi 1 -p udp --dport 1701 -m policy --dir in --pol none -j DROP
     $ipi 2 -m conntrack --ctstate INVALID -j DROP
     $ipi 3 -m conntrack --ctstate "$res" -j ACCEPT
-    $ipi 4 -p udp -m multiport --dports 4500,2319 -j ACCEPT
+    $ipi 4 -p udp -m multiport --dports 4500,2319,56328 -j ACCEPT
     $ipi 5 -p udp --dport 1701 -m policy --dir in --pol ipsec -j ACCEPT
     $ipi 6 -p udp --dport 1701 -j DROP
 	$ipf 1 -m conntrack --ctstate INVALID -j DROP
@@ -623,7 +623,6 @@ update_iptables() {
     $ipf 7 -s "$XAUTH_NET" -o ppp+ -j ACCEPT
     iptables -A FORWARD -j DROP
 	iptables -A INPUT --proto icmp -j DROP
-	iptables -L -n -v [List Iptables Rules]
     $ipp -s "$XAUTH_NET" -o "$NET_IFACE" -m policy --dir out --pol none -j MASQUERADE
     $ipp -s "$L2TP_NET" -o "$NET_IFACE" -j MASQUERADE
     echo "# Modified by hwdsl2 VPN script" > "$IPT_FILE"
