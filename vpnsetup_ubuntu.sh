@@ -594,7 +594,6 @@ update_iptables() {
     $ipi 4 -p udp -m multiport --dports 4500,2319 -j ACCEPT
     $ipi 5 -p udp --dport 1701 -m policy --dir in --pol ipsec -j ACCEPT
     $ipi 6 -p udp --dport 1701 -j DROP
-    $ipi 7 -p udp -m multiport --dports 500,1125 -j DROP
     $ipf 1 -m conntrack --ctstate INVALID -j DROP
     $ipf 2 -i "$NET_IFACE" -o ppp+ -m conntrack --ctstate "$res" -j ACCEPT
     $ipf 3 -i ppp+ -o "$NET_IFACE" -j ACCEPT
