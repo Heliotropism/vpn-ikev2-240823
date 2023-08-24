@@ -573,6 +573,20 @@ EOF
   fi
 }
 
+update_ufw() {
+  bigecho "Updating ufw rules..."
+    
+  echo "
+  # ok icmp codes
+-A ufw-before-input -p icmp --icmp-type destination-unreachable -j DROP
+-A ufw-before-input -p icmp --icmp-type source-quench -j DROP
+-A ufw-before-input -p icmp --icmp-type time-exceeded -j DROP
+-A ufw-before-input -p icmp --icmp-type parameter-problem -j DROP
+-A ufw-before-input -p icmp --icmp-type echo-request -j DROP
+  " >> /etc/ufw/before.rules
+  
+}
+
 update_iptables() {
   bigecho "Updating IPTables rules..."
   IPT_FILE=/etc/iptables.rules
@@ -612,6 +626,7 @@ update_iptables() {
     fi
   fi
 }
+
 
 apply_gcp_mtu_fix() {
   if dmidecode -s system-product-name 2>/dev/null | grep -qi 'Google Compute Engine' \
@@ -798,6 +813,7 @@ vpnsetup() {
   create_vpn_config
   update_sysctl
   update_iptables
+  update_ufw
   apply_gcp_mtu_fix
   enable_on_boot
   start_services
